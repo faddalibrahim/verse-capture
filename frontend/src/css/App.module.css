@@ -1,0 +1,16 @@
+.app {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100dvh;
+  width: 100vw;
+  background-color: rgba(238, 238, 238, 0.6);
+}
+
+.appName {
+  color: #222;
+  font-size: 1.2rem;
+  font-weight: normal;
+  padding: 1rem;
+}
