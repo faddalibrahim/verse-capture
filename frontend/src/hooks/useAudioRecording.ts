@@ -14,10 +14,12 @@ export const useAudioRecording = (): AudioRecordingHook => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
+  const [ws, setWs] = useState<WebSocket | null>(null);
+
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [audioData, setAudioData] = useState<Blob | null>(null);
+  const [audioData] = useState<Blob | null>(null);
 
   const PAUSED = "paused";
   const RECORDING = "recording";
@@ -28,10 +30,16 @@ export const useAudioRecording = (): AudioRecordingHook => {
     if (mediaRecorder && mediaRecorder.state !== INACTIVE) {
       mediaRecorder.stop();
       mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+      setMediaRecorder(null);
       setIsRecording(false);
       setIsPaused(false);
     }
-  }, [mediaRecorder]);
+
+    if (ws) {
+      ws.close();
+      setWs(null);
+    }
+  }, [mediaRecorder, ws]);
 
   // Cleanup on unmount or error
   useEffect(() => {
@@ -44,29 +52,65 @@ export const useAudioRecording = (): AudioRecordingHook => {
 
   const startRecording = async () => {
     try {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        console.warn("WebSocket already open, reusing connection.");
+        return;
+      }
+
+      // Connect to new WebSocket
+      const socket = new WebSocket("ws://localhost:8000");
+
+      socket.onopen = () => {
+        console.log("WebSocket connected");
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        setError("WebSocket connection failed");
+      };
+
+      socket.onclose = () => {
+        console.warn("WebSocket closed. Attempting to reconnect...");
+        setWs(null);
+      };
+
+      // Get audio stream
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
 
-      console.log(recorder);
-
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          setAudioData(event.data);
-          console.log(event.data);
+          // Send audio chunk to server
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.send(event.data);
+          } else {
+            console.warn("WebSocket not open, dropping audio chunk");
+          }
         }
       };
 
+      setWs(socket);
       setMediaRecorder(recorder);
       recorder.start(100);
       setIsRecording(true);
       setIsPaused(false);
       setError(null);
-      console.log(recorder);
     } catch (err) {
-      setError("Microphone permission denied");
-      console.error("Error accessing microphone:", err);
+      setError("Microphone or connection error");
+      console.error("Error:", err);
     }
   };
+
+  // Clean up WebSocket on unmount
+  useEffect(() => {
+    return () => {
+      if (ws) {
+        ws.onclose = null;
+        ws.onerror = null;
+        ws.close();
+      }
+    };
+  }, [ws]);
 
   const pauseRecording = useCallback(() => {
     if (mediaRecorder && mediaRecorder.state === RECORDING) {
