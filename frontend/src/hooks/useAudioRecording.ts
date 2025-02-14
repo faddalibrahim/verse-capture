@@ -10,7 +10,13 @@ interface AudioRecordingHook {
   audioData: Blob | null;
 }
 
-export const useAudioRecording = (): AudioRecordingHook => {
+interface AudioRecordingProps {
+  onVerseReceived: (verse: { reference: string; text: string }) => void;
+}
+
+export const useAudioRecording = ({
+  onVerseReceived,
+}: AudioRecordingProps): AudioRecordingHook => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
@@ -58,10 +64,20 @@ export const useAudioRecording = (): AudioRecordingHook => {
       }
 
       // Connect to new WebSocket
-      const socket = new WebSocket("ws://localhost:8000");
+      // const socket = new WebSocket("ws://localhost:8000");
+      const socket = new WebSocket("ws://192.168.100.18:8000");
 
       socket.onopen = () => {
         console.log("WebSocket connected");
+      };
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("Received from server:", data);
+
+        if (data.type === "bible_reference") {
+          onVerseReceived?.(data.verse);
+        }
       };
 
       socket.onerror = (error) => {
@@ -74,8 +90,19 @@ export const useAudioRecording = (): AudioRecordingHook => {
         setWs(null);
       };
 
+      // First check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setError("Audio recording is not supported on this device/browser");
+        return;
+      }
+
       // Get audio stream
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+        },
+      });
       const recorder = new MediaRecorder(stream);
 
       recorder.ondataavailable = (event) => {

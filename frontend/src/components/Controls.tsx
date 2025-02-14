@@ -5,16 +5,17 @@ import { useAudioRecording } from "../hooks/useAudioRecording";
 
 interface ControlsProps {
   onTranscript: (text: string) => void;
+  onVerseReceived: (verse: { reference: string; text: string }) => void;
 }
 
-const Controls = ({ onTranscript }: ControlsProps) => {
+const Controls = ({ onTranscript, onVerseReceived }: ControlsProps) => {
   const {
     startRecording,
     pauseRecording,
     resumeRecording,
     isRecording,
     isPaused,
-  } = useAudioRecording();
+  } = useAudioRecording({ onVerseReceived });
 
   const getStatusIcon = () => {
     if (!isRecording) return <Icons.Analytics />;
