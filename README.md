@@ -1,27 +1,31 @@
 # VerseCapture
 
+real-time sermon companion that listens to live sermons, transcribes speech, detects Bible references, and instantly displays the corresponding scripture
+
 ## Tools & Technologies
 
-- React (scaffolded with vite)
-- Nodejs (with Express)
-- Open AI's Whisper Model (for transcription)
-- Google Gemini API (for transcoding)
-- WebSockets for real-time communication
+- [x] React (scaffolded with vite)
+- [x] Nodejs (with Express)
+- [x] Open AI's Whisper Model (for transcription)
+- [x] Google Gemini API (for transcoding)
+- [x] WebSockets for real-time communication
+- [x] PostgreSQL for database management
 
 ## Setup Locally
 
 ### Prerequisites
 
-- Node.js installed
-- npm installed
-- OpenAI API key
-- Google Gemini API key
+- [x] Node.js installed
+- [x] PostgreSQL installed & Setup
+- [x] OpenAI API key
+- [x] Google Gemini API key
+- [x] Setup other Environment Variables (check `.env.example` files)
 
 1. Clone the repository
 
    ```bash
-   git clone <repository-url>
-   cd ai-bible-quotation-app-test
+   git clone https://github.com/faddalibrahim/verse-capture.git
+   cd verse-capture
    ```
 
 2. Install dependencies for both the client and server
