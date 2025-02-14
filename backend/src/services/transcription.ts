@@ -1,10 +1,15 @@
 import { WebSocket } from "ws";
-import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
-import { openai } from "../config/openai";
-import { genAI } from "../config/gemini";
-import { GeminiResponse } from "../types/gemini";
+import { openai, genAI } from "../ai-clients";
+import { findVerseByReference, searchVersesByText } from "./verses";
+
+export interface GeminiResponse {
+  book: string;
+  chapter: number;
+  verse: number;
+  text: string;
+}
 
 export async function transcribeAudio(ws: WebSocket, audioChunks: Buffer[]) {
   let filePath = "";
@@ -26,24 +31,35 @@ export async function transcribeAudio(ws: WebSocket, audioChunks: Buffer[]) {
 
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const prompt = `Given this spoken text: "${transcription.text}", identify any Bible verses mentioned. Return a JSON response with:
-      - reference (e.g., "John 3:16")
+      - book (e.g., "John")
+      - chapter (as number)
+      - verse (as number)
       - text (the actual verse text)
-      If no specific verse is mentioned, suggest a relevant verse based on the theme.`;
+      If no specific verse is mentioned, analyze the theme and suggest a relevant verse.`;
 
       const result = await model.generateContent(prompt);
       const response = JSON.parse(result.response.text());
 
       console.log("gemini-pro:", response);
 
-      ws.send(
-        JSON.stringify({
-          type: "bible_reference",
-          verse: {
-            reference: response.reference,
-            text: response.text,
-          },
-        })
+      // Try to find the exact verse in our database
+      const verse = await findVerseByReference(
+        response.book,
+        response.chapter,
+        response.verse
       );
+
+      // If no exact verse found, try searching by theme
+      const verseData = verse || (await searchVersesByText(transcription.text))[0];
+
+      if (verseData) {
+        ws.send(
+          JSON.stringify({
+            type: "bible_reference",
+            verse: verseData
+          })
+        );
+      }
     }
   } catch (error: any) {
     console.error("Error:", error.message);
