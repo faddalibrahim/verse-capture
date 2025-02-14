@@ -5,7 +5,9 @@ import AppStyles from "./css/App.module.css";
 
 function App() {
   const [verse, setVerse] = useState<{
-    reference: string;
+    book: string;
+    chapter: number;
+    verse: number;
     text: string;
   } | null>(null);
 

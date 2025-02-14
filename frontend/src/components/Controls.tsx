@@ -5,7 +5,12 @@ import { useAudioRecording } from "../hooks/useAudioRecording";
 
 interface ControlsProps {
   onTranscript: (text: string) => void;
-  onVerseReceived: (verse: { reference: string; text: string }) => void;
+  onVerseReceived: (verse: {
+    book: string;
+    chapter: number;
+    verse: number;
+    text: string;
+  } | null) => void;
 }
 
 const Controls = ({ onTranscript, onVerseReceived }: ControlsProps) => {

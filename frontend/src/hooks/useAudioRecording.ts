@@ -11,7 +11,14 @@ interface AudioRecordingHook {
 }
 
 interface AudioRecordingProps {
-  onVerseReceived: (verse: { reference: string; text: string }) => void;
+  onVerseReceived: (
+    verse: {
+      book: string;
+      chapter: number;
+      verse: number;
+      text: string;
+    } | null
+  ) => void;
 }
 
 export const useAudioRecording = ({

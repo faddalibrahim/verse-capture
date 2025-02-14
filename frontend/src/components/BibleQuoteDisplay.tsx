@@ -2,7 +2,9 @@ import styles from "../css/BibleVerse.module.css";
 
 interface BibleVerseProps {
   verse?: {
-    reference: string;
+    book: string;
+    chapter: number;
+    verse: number;
     text: string;
   } | null;
 }
@@ -20,7 +22,7 @@ const BibleQuoteDisplay = ({ verse }: BibleVerseProps) => {
 
   return (
     <div className={styles.verse}>
-      <h2>{verse.reference}</h2>
+      <h2>{`${verse.book} ${verse.chapter}:${verse.verse}`}</h2>
       <p>{verse.text}</p>
     </div>
   );
