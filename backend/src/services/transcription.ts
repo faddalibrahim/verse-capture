@@ -30,15 +30,34 @@ export async function transcribeAudio(ws: WebSocket, audioChunks: Buffer[]) {
       console.log("Transcription:", transcription.text);
 
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = `Given this spoken text: "${transcription.text}", identify any Bible verses mentioned. Return a JSON response with:
-      - book (e.g., "John")
-      - chapter (as number)
-      - verse (as number)
-      - text (the actual verse text)
-      If no specific verse is mentioned, analyze the theme and suggest a relevant verse.`;
+      const prompt = `Given this spoken text: "${transcription.text}", identify any Bible verses mentioned. Respond ONLY with a JSON object in this exact format, nothing else:
+{
+  "book": "BookName",
+  "chapter": 1,
+  "verse": 1,
+  "text": "Verse text here"
+}
+If no specific verse is mentioned, analyze the theme and suggest a relevant verse.`;
 
       const result = await model.generateContent(prompt);
-      const response = JSON.parse(result.response.text());
+      let response;
+      try {
+        const cleanedResponse = result.response.text().replace(/```json\n|\n```/g, '').trim();
+        console.log("Cleaned Gemini response:", cleanedResponse);
+        response = JSON.parse(cleanedResponse);
+      } catch (parseError) {
+        console.error("Parse error:", parseError);
+        // Fallback to text search
+        const verses = await searchVersesByText(transcription.text);
+        if (verses.length > 0) {
+          ws.send(JSON.stringify({
+            type: "bible_reference",
+            verse: verses[0]
+          }));
+          return;
+        }
+        throw parseError;
+      }
 
       console.log("gemini-pro:", response);
 
