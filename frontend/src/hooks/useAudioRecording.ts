@@ -21,10 +21,11 @@ export const useAudioRecording = (): AudioRecordingHook => {
 
   const PAUSED = "paused";
   const RECORDING = "recording";
+  const INACTIVE = "inactive";
 
   // Internal cleanup function
   const stopRecording = useCallback(() => {
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    if (mediaRecorder && mediaRecorder.state !== INACTIVE) {
       mediaRecorder.stop();
       mediaRecorder.stream.getTracks().forEach((track) => track.stop());
       setIsRecording(false);
@@ -45,6 +46,8 @@ export const useAudioRecording = (): AudioRecordingHook => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
+
+      console.log(recorder);
 
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -69,7 +72,6 @@ export const useAudioRecording = (): AudioRecordingHook => {
     if (mediaRecorder && mediaRecorder.state === RECORDING) {
       mediaRecorder.pause();
       setIsPaused(true);
-      console.log(mediaRecorder);
     }
   }, [mediaRecorder]);
 
