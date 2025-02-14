@@ -19,7 +19,6 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
 - [x] PostgreSQL installed & Setup
 - [x] OpenAI API key
 - [x] Google Gemini API key
-- [x] Setup other Environment Variables (check `.env.example` files)
 
 1. Clone the repository
 
@@ -36,9 +35,18 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
    ```
 
 3. Set up environment variables
+
    - Create a `.env` file in the root of both frontend and backend directories.
-   - Add your API keys and other environment variables
-4. Run the development server for both frontend and backend
+   - Add your API keys and other environment variables (check `.env.example` files)
+
+4. Setup the database
+
+   - Create a PostgreSQL database (verse_capture or whatever you wish)
+   - Populate the database with bible data
+
+   Bible data soured from [Bible Translations](https://github.com/jadenzaleski/BibleTranslations)
+
+5. Run the development server for both frontend and backend
 
    ```bash
    npm run dev
