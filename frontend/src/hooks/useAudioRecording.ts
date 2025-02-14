@@ -63,9 +63,7 @@ export const useAudioRecording = ({
         return;
       }
 
-      // Connect to new WebSocket
-      // const socket = new WebSocket("ws://localhost:8000");
-      const socket = new WebSocket("ws://192.168.100.18:8000");
+      const socket = new WebSocket(import.meta.env.VITE_WS_URL);
 
       socket.onopen = () => {
         console.log("WebSocket connected");
@@ -93,6 +91,9 @@ export const useAudioRecording = ({
       // First check if getUserMedia is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         setError("Audio recording is not supported on this device/browser");
+        console.error(
+          "Audio recording is not supported on this device/browser"
+        );
         return;
       }
 
