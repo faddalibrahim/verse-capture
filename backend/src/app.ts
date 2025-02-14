@@ -2,7 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { createServer } from "http";
-import { WebSocket, WebSocketServer } from "ws";
+import { WebSocketServer } from "ws";
+import OpenAI from "openai";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
 
@@ -10,16 +13,54 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
-app.use(cors());
-app.use(express.json());
+// Initialize OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.WHISPER_API_KEY,
+});
 
 // WebSocket connection handling
-wss.on("connection", (ws: WebSocket) => {
+wss.on("connection", (ws) => {
   console.log("Client connected");
+  console.log(process.env.WHISPER_API_KEY);
+  let audioChunks: Buffer[] = []; // Store chunks
 
-  ws.on("message", (data) => {
-    // We'll handle audio chunks here
-    console.log("Received audio chunk");
+  ws.on("message", async (data) => {
+    // let chunk: Buffer;
+    // if (Buffer.isBuffer(data)) {
+    //   chunk = data;
+    // } else if (data instanceof ArrayBuffer) {
+    //   chunk = Buffer.from(new Uint8Array(data));
+    // } else {
+    //   console.error("Unsupported data type received:", typeof data);
+    //   return;
+    // }
+
+    // audioChunks.push(chunk);
+
+    // // After collecting enough chunks, transcribe
+    // if (audioChunks.length >= 10) {
+    //   const audioBuffer = Buffer.concat(audioChunks);
+    //   const filePath = path.join(__dirname, "temp_audio.webm");
+
+    //   console.log(filePath);
+
+    //   fs.writeFileSync(filePath, audioBuffer);
+
+    //   const transcription = await openai.audio.transcriptions.create({
+    //     file: fs.createReadStream(filePath),
+    //     model: "whisper-1",
+    //   });
+
+    //   console.log("Transcription:", transcription.text);
+    //   audioChunks = []; // Reset for next batch
+    // }
+
+    const filePath = path.join(__dirname, "temp_audio.webm");
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(filePath),
+      model: "whisper-1",
+    });
+    console.log("Transcription:", transcription.text);
   });
 
   ws.on("close", () => {
