@@ -54,7 +54,7 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
 
 ## Live Link
 
-[Live Link](https://verse-capture.netlify.app)
+[Live Link](https://verse-capture.netlify.app) (to be taken down soon to avoid exceeding open ai's whisper model credits)
 
 ## Figma UI Reference
 
