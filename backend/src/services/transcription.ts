@@ -68,10 +68,10 @@ If no specific verse is mentioned, analyze the theme and suggest the most releva
       })
     );
   } finally {
-    // if (filePath && fs.existsSync(filePath)) {
-    //   fs.unlink(filePath, (err) => {
-    //     if (err) console.error("Error deleting file:", err);
-    //   });
-    // }
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("Error deleting file:", err);
+      });
+    }
   }
 }
