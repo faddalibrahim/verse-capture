@@ -7,16 +7,14 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
 - [x] React (scaffolded with vite)
 - [x] Nodejs (with Express)
 - [x] Open AI's Whisper Model (for transcription)
-- [x] Google Gemini API (for transcoding)
+- [x] Google Gemini API (for verse recognition)
 - [x] WebSockets for real-time communication
-- [x] PostgreSQL for database management
 
 ## Setup Locally
 
 ### Prerequisites
 
 - [x] Node.js installed
-- [x] PostgreSQL installed & Setup
 - [x] OpenAI API key
 - [x] Google Gemini API key
 
@@ -39,14 +37,7 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
    - Create a `.env` file in the root of both frontend and backend directories.
    - Add your API keys and other environment variables (check `.env.example` files)
 
-4. Setup the database
-
-   - Create a PostgreSQL database (verse_capture or whatever you wish)
-   - Populate the database with bible data
-
-   Bible data soured from [Bible Translations](https://github.com/jadenzaleski/BibleTranslations)
-
-5. Run the development server for both frontend and backend
+4. Run the development server for both frontend and backend
 
    ```bash
    npm run dev
@@ -54,7 +45,7 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
 
 ## Live Link
 
-[Live Link](https://verse-capture.netlify.app) (to be taken down soon to avoid exceeding open ai's whisper model credits)
+[Live Link](https://verse-capture.netlify.app) (server may not be active -- its a free instance)
 
 ## Figma UI Reference
 
