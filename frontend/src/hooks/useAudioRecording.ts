@@ -126,7 +126,7 @@ export const useAudioRecording = ({
 
       setWs(socket);
       setMediaRecorder(recorder);
-      recorder.start(100);
+      recorder.start(250);
       setIsRecording(true);
       setIsPaused(false);
       setError(null);

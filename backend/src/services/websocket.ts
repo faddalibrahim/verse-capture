@@ -6,6 +6,7 @@ export function handleWebSocketConnection(ws: WebSocket) {
 
   let audioChunks: Buffer[] = [];
   let transcriptionInProgress = false;
+  let header: Buffer | null = null; // Store the header
 
   ws.on("message", async (data) => {
     try {
@@ -19,21 +20,33 @@ export function handleWebSocketConnection(ws: WebSocket) {
         return;
       }
 
+      // Capture the header from the first chunk
+      if (!header) {
+        header = chunk;
+      }
+
       audioChunks.push(chunk);
 
-      if (!transcriptionInProgress && audioChunks.length >= 10) {
+      if (!transcriptionInProgress && audioChunks.length >= 20) {
         transcriptionInProgress = true;
-        await transcribeAudio(ws, audioChunks);
+        const chunksToProcess = [header, ...audioChunks.slice(0, 20)]; // Prepend the header
+        console.log("Processing chunks:", chunksToProcess.length);
+        await transcribeAudio(ws, chunksToProcess);
+        audioChunks = []; // Clear buffer for new chunks
         transcriptionInProgress = false;
-        audioChunks = [];
       }
     } catch (error: any) {
       console.error("Processing error:", error.message);
       audioChunks = [];
+      transcriptionInProgress = false;
+      header = null; // Reset the header on error
     }
   });
 
   ws.on("close", () => {
     console.log("Client disconnected");
+    audioChunks = [];
+    transcriptionInProgress = false;
+    header = null; // Reset the header on disconnect
   });
 }

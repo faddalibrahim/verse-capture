@@ -2,7 +2,6 @@ import { WebSocket } from "ws";
 import fs from "fs";
 import path from "path";
 import { openai, genAI } from "../ai-clients";
-import { findVerseByReference, searchVersesByText } from "./verses";
 
 export interface GeminiResponse {
   book: string;
@@ -30,54 +29,34 @@ export async function transcribeAudio(ws: WebSocket, audioChunks: Buffer[]) {
       console.log("Transcription:", transcription.text);
 
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = `Given this spoken text: "${transcription.text}", identify any Bible verses mentioned. Respond ONLY with a JSON object in this exact format, nothing else:
+      const prompt = `Given this spoken text: "${transcription.text}", identify any Bible verses mentioned or suggest a relevant verse. Return ONLY a JSON object in this exact format (no additional text, no markdown):
 {
   "book": "BookName",
-  "chapter": 1,
-  "verse": 1,
-  "text": "Verse text here"
+  "chapter": number,
+  "verse": number,
+  "text": "Complete verse text"
 }
-If no specific verse is mentioned, analyze the theme and suggest a relevant verse.`;
+If no specific verse is mentioned, analyze the theme and suggest the most relevant verse.`;
 
       const result = await model.generateContent(prompt);
       let response;
       try {
-        const cleanedResponse = result.response.text().replace(/```json\n|\n```/g, '').trim();
+        const cleanedResponse = result.response
+          .text()
+          .replace(/```json\n|\n```/g, "")
+          .trim();
         console.log("Cleaned Gemini response:", cleanedResponse);
         response = JSON.parse(cleanedResponse);
-      } catch (parseError) {
-        console.error("Parse error:", parseError);
-        // Fallback to text search
-        const verses = await searchVersesByText(transcription.text);
-        if (verses.length > 0) {
-          ws.send(JSON.stringify({
-            type: "bible_reference",
-            verse: verses[0]
-          }));
-          return;
-        }
-        throw parseError;
-      }
 
-      console.log("gemini-pro:", response);
-
-      // Try to find the exact verse in our database
-      const verse = await findVerseByReference(
-        response.book,
-        response.chapter,
-        response.verse
-      );
-
-      // If no exact verse found, try searching by theme
-      const verseData = verse || (await searchVersesByText(transcription.text))[0];
-
-      if (verseData) {
         ws.send(
           JSON.stringify({
             type: "bible_reference",
-            verse: verseData
+            verse: response,
           })
         );
+      } catch (parseError) {
+        console.error("Parse error:", parseError);
+        throw parseError;
       }
     }
   } catch (error: any) {
@@ -89,10 +68,10 @@ If no specific verse is mentioned, analyze the theme and suggest a relevant vers
       })
     );
   } finally {
-    if (filePath && fs.existsSync(filePath)) {
-      fs.unlink(filePath, (err) => {
-        if (err) console.error("Error deleting file:", err);
-      });
-    }
+    // if (filePath && fs.existsSync(filePath)) {
+    //   fs.unlink(filePath, (err) => {
+    //     if (err) console.error("Error deleting file:", err);
+    //   });
+    // }
   }
 }
