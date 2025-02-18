@@ -45,7 +45,7 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
 
 ## Live Link
 
-[Live Link](https://verse-capture.netlify.app) (server may not be active -- its a free instance)
+[Live Link](https://verse-capture.netlify.app) (backend server may not be active -- its a free instance)
 
 ## Figma UI Reference
 
@@ -53,4 +53,4 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
 
 ## Sneak Peek
 
-![Demo](demo.gif)
+![Demo](demoo.gif)
