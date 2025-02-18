@@ -1,4 +1,5 @@
 import styles from "../css/BibleVerse.module.css";
+import { useTypewriter } from "../hooks/useTypewriter";
 
 interface BibleVerseProps {
   verse?: {
@@ -10,7 +11,7 @@ interface BibleVerseProps {
 }
 
 const BibleQuoteDisplay = ({ verse }: BibleVerseProps) => {
-  if (!verse) {
+  if (!verse || !verse.book || !verse.chapter || !verse.verse || !verse.text) {
     return (
       <div className={styles.verse}>
         <div className={`${styles.skeleton} ${styles.reference}`}></div>
@@ -20,10 +21,12 @@ const BibleQuoteDisplay = ({ verse }: BibleVerseProps) => {
     );
   }
 
+  const typewriterText = useTypewriter(verse.text, 20);
+
   return (
     <div className={styles.verse}>
       <h2>{`${verse.book} ${verse.chapter}:${verse.verse}`}</h2>
-      <p>{verse.text}</p>
+      <p>{typewriterText}</p>
     </div>
   );
 };
