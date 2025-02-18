@@ -13,7 +13,6 @@ logs
 
 # Environment Variables
 **/.env
-**/.env.*
 
 # Dependencies
 **/node_modules
