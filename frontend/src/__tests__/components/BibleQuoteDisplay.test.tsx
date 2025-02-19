@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react';
-import BibleQuoteDisplay from '../../components/BibleQuoteDisplay';
+import { render, screen } from "@testing-library/react";
+import BibleQuoteDisplay from "../../components/BibleQuoteDisplay";
 
 describe("BibleQuoteDisplay", () => {
   it("renders loading state when no verse is provided", () => {
-    render(<BibleQuoteDisplay verse={null} />);
+    render(<BibleQuoteDisplay verse={null} darkMode={false} />);
     expect(screen.getByTestId("verse-skeleton")).toBeInTheDocument();
   });
 
@@ -15,7 +15,7 @@ describe("BibleQuoteDisplay", () => {
       text: "In the beginning God created the heaven and the earth.",
     };
 
-    render(<BibleQuoteDisplay verse={testVerse} />);
+    render(<BibleQuoteDisplay verse={testVerse} darkMode={false} />);
     expect(screen.getByText("Genesis 1:1")).toBeInTheDocument();
     expect(screen.getByText(testVerse.text)).toBeInTheDocument();
   });
