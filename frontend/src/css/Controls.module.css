@@ -1,4 +1,4 @@
-.wrapper {
+.controls {
   width: 100%;
   background-color: white;
   display: flex;
@@ -16,6 +16,10 @@
   }
 }
 
+.dark.controls {
+  background-color: #050505;
+}
+
 .statusIcon {
   width: 48px;
   height: 48px;
@@ -27,15 +31,32 @@
   padding: 12px;
 }
 
+.dark .statusIcon {
+  background-color: #24292d;
+
+  svg {
+    color: white;
+  }
+}
+
 .statusIcon svg {
   width: 24px;
   height: 24px;
   color: #1a1a1a;
 }
 
-.wrapper p {
+.controls p {
   text-align: center;
   color: #1a1a1a;
   font-size: 16px;
   line-height: 1.5;
+}
+
+.transcribingText {
+  color: #555;
+  font-style: italic;
+}
+
+.dark .transcribingText {
+  color: #ccc;
 }
