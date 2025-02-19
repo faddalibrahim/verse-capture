@@ -8,12 +8,13 @@ interface BibleVerseProps {
     verse: number;
     text: string;
   } | null;
+  darkMode: boolean; // Add darkMode prop
 }
 
-const BibleQuoteDisplay = ({ verse }: BibleVerseProps) => {
+const BibleQuoteDisplay = ({ verse, darkMode }: BibleVerseProps) => {
   if (!verse || !verse.book || !verse.chapter || !verse.verse || !verse.text) {
     return (
-      <div className={styles.verse}>
+      <div className={`${styles.verse} ${darkMode ? styles.dark : ""}`}>
         <div className={`${styles.skeleton} ${styles.reference}`}></div>
         <div className={`${styles.skeleton} ${styles.text}`}></div>
         <div className={`${styles.skeleton} ${styles.text}`}></div>
@@ -24,9 +25,9 @@ const BibleQuoteDisplay = ({ verse }: BibleVerseProps) => {
   const typewriterText = useTypewriter(verse.text, 20);
 
   return (
-    <div className={styles.verse}>
+    <div className={`${styles.verse} ${darkMode ? styles.dark : ""}`}>
       <h2>{`${verse.book} ${verse.chapter}:${verse.verse}`}</h2>
-      <p>{typewriterText}</p>
+      <p className={darkMode ? styles.darkText : styles.lightText}>{typewriterText}</p> {/* Apply class */}
     </div>
   );
 };

@@ -5,15 +5,22 @@ import { useAudioRecording } from "../hooks/useAudioRecording";
 
 interface ControlsProps {
   onTranscript: (text: string) => void;
-  onVerseReceived: (verse: {
-    book: string;
-    chapter: number;
-    verse: number;
-    text: string;
-  } | null) => void;
+  darkMode: boolean;
+  onVerseReceived: (
+    verse: {
+      book: string;
+      chapter: number;
+      verse: number;
+      text: string;
+    } | null
+  ) => void;
 }
 
-const Controls = ({ onTranscript, onVerseReceived }: ControlsProps) => {
+const Controls = ({
+  onTranscript,
+  onVerseReceived,
+  darkMode,
+}: ControlsProps) => {
   const {
     startRecording,
     pauseRecording,
@@ -23,7 +30,7 @@ const Controls = ({ onTranscript, onVerseReceived }: ControlsProps) => {
   } = useAudioRecording({ onVerseReceived });
 
   const getStatusIcon = () => {
-    if (!isRecording) return <Icons.Analytics />;
+    if (!isRecording) return <Icons.Disc />;
     if (isRecording && !isPaused) return <Icons.AudioLines />;
     return <Icons.Pause />;
   };
@@ -42,9 +49,15 @@ const Controls = ({ onTranscript, onVerseReceived }: ControlsProps) => {
   };
 
   return (
-    <div className={controlStyles.wrapper}>
+    <div
+      className={`${controlStyles.controls} ${
+        darkMode ? controlStyles.dark : ""
+      }`}
+    >
       <div className={controlStyles.statusIcon}>{getStatusIcon()}</div>
-      <p>Transcribing and detecting Bible quotations in real time</p>
+      <p className={controlStyles.transcribingText}>
+        Transcribing and detecting Bible quotations in real time
+      </p>
       <ListenButton
         isListening={isRecording}
         isPaused={isPaused}
