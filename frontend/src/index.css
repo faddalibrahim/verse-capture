@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css?family=Google+Sans:200,300,400,500,600,700,900");
+
+@import "tailwindcss";
+
+@theme {
+  --animate-brighten: brighten 1.2s infinite;
+  --animate-brighten-delay-4: brighten 1.2s infinite 0.4s;
+  --animate-brighten-delay-2: brighten 1.2s infinite 0.2s;
+
+  @keyframes brighten {
+    to {
+      background-color: rgb(165, 165, 165);
+      box-shadow: none;
+    }
+  }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  font-family: "Google Sans", Inter, system-ui, Avenir, Helvetica, Arial,
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
