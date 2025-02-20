@@ -7,9 +7,21 @@ export function handleWebSocketConnection(ws: WebSocket) {
   let audioChunks: Buffer[] = [];
   let transcriptionInProgress = false;
   let header: Buffer | null = null; // Store the header
+  let language: string | null = "en"; // Store the language
 
-  ws.on("message", async (data) => {
+  ws.on("message", async (data: any) => {
     try {
+      // if (typeof data === "object") {
+      //   const message = data;
+      //   if (message.type === "language") {
+      //     language = message.language;
+      //     console.log(`Language set to: ${language}`);
+      //     return;
+      //   }
+      // } else {
+
+      // }
+
       let chunk: Buffer;
       if (Buffer.isBuffer(data)) {
         chunk = data;
@@ -31,7 +43,7 @@ export function handleWebSocketConnection(ws: WebSocket) {
         transcriptionInProgress = true;
         const chunksToProcess = [header, ...audioChunks.slice(0, 20)]; // Prepend the header
         console.log("Processing chunks:", chunksToProcess.length);
-        await transcribeAudio(ws, chunksToProcess);
+        await transcribeAudio(ws, chunksToProcess, language); // Pass language to transcription
         audioChunks = []; // Clear buffer for new chunks
         transcriptionInProgress = false;
       }
@@ -48,5 +60,6 @@ export function handleWebSocketConnection(ws: WebSocket) {
     audioChunks = [];
     transcriptionInProgress = false;
     header = null; // Reset the header on disconnect
+    language = null; // Reset the language on disconnect
   });
 }

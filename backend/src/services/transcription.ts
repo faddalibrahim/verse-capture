@@ -10,7 +10,16 @@ export interface GeminiResponse {
   text: string;
 }
 
-export async function transcribeAudio(ws: WebSocket, audioChunks: Buffer[]) {
+export async function transcribeAudio(
+  ws: WebSocket,
+  audioChunks: Buffer[],
+  language: string | null = "en"
+) {
+  if (!language) {
+    console.error("Language is not set");
+    return;
+  }
+
   let filePath = "";
   try {
     const audioBuffer = Buffer.concat(audioChunks);
@@ -21,21 +30,24 @@ export async function transcribeAudio(ws: WebSocket, audioChunks: Buffer[]) {
       file: fs.createReadStream(filePath),
       model: "whisper-1",
       response_format: "json",
-      language: "en",
       temperature: 0,
     });
+
+    console.log("transcription", transcription);
 
     if (transcription.text) {
       console.log("Transcription:", transcription.text);
 
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = `Given this spoken text: "${transcription.text}", identify any Bible verses mentioned or suggest a relevant verse. Return ONLY a JSON object in this exact format (no additional text, no markdown):
+      const prompt = `Given this spoken text: "${transcription.text}", identify any Bible or Quran verses mentioned or suggest a relevant verse. Return ONLY a JSON object in this exact format (no additional text, no markdown):
 {
   "book": "BookName",
   "chapter": number,
   "verse": number,
   "text": "Complete verse text"
+  "translation": "translation in english for arabic text"
 }
+  If it is an arabic text, return the text in arabic and add translation in english
 If no specific verse is mentioned, analyze the theme and suggest the most relevant verse.`;
 
       const result = await model.generateContent(prompt);
