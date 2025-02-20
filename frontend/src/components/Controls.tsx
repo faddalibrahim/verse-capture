@@ -1,26 +1,19 @@
 import ListenButton from "./ListenButton";
-import controlStyles from "../css/Controls.module.css";
 import Icons from "./Icons";
 import { useAudioRecording } from "../hooks/useAudioRecording";
 
-interface ControlsProps {
-  onTranscript: (text: string) => void;
-  darkMode: boolean;
-  onVerseReceived: (
-    verse: {
-      book: string;
-      chapter: number;
-      verse: number;
-      text: string;
-    } | null
-  ) => void;
+interface ScriptureVerse {
+  book: string;
+  chapter: number;
+  verse: number;
+  text: string;
 }
 
-const Controls = ({
-  onTranscript,
-  onVerseReceived,
-  darkMode,
-}: ControlsProps) => {
+interface ControlsProps {
+  onVerseReceived: (verse: ScriptureVerse | null) => void;
+}
+
+const Controls = ({ onVerseReceived }: ControlsProps) => {
   const {
     startRecording,
     pauseRecording,
@@ -38,25 +31,20 @@ const Controls = ({
   const handleListening = async () => {
     if (!isRecording) {
       await startRecording();
-      onTranscript("Recording started...");
     } else if (!isPaused) {
-      pauseRecording(); // Changed from stopRecording to pauseRecording
-      onTranscript("Recording paused.");
+      pauseRecording();
     } else {
       resumeRecording();
-      onTranscript("Recording resumed...");
     }
   };
 
   return (
-    <div
-      className={`${controlStyles.controls} ${
-        darkMode ? controlStyles.dark : ""
-      }`}
-    >
-      <div className={controlStyles.statusIcon}>{getStatusIcon()}</div>
-      <p className={controlStyles.transcribingText}>
-        Transcribing and detecting Bible quotations in real time
+    <div className="p-10 w-full lg:w-[40vw] flex flex-col items-center gap-10 lg:gap-6 rounded-t-3xl  bg-white dark:bg-[#1c1b22]">
+      <div className="dark:text-white p-4 bg-gray-50 dark:bg-[#574964] rounded-full">
+        {getStatusIcon()}
+      </div>
+      <p className="text-center dark:text-white">
+        Transcribing and detecting Bible & Quran quotations in real time
       </p>
       <ListenButton
         isListening={isRecording}

@@ -1,4 +1,3 @@
-import styles from "../css/ListenButton.module.css";
 import Icons from "./Icons";
 
 interface ListenButtonProps {
@@ -7,7 +6,11 @@ interface ListenButtonProps {
   onClick: () => void;
 }
 
-const ListenButton = ({ isListening, isPaused, onClick }: ListenButtonProps) => {
+const ListenButton = ({
+  isListening,
+  isPaused,
+  onClick,
+}: ListenButtonProps) => {
   const getButtonText = () => {
     if (!isListening) return "Start Listening";
     if (!isPaused) return "Stop Listening";
@@ -22,9 +25,11 @@ const ListenButton = ({ isListening, isPaused, onClick }: ListenButtonProps) => 
 
   return (
     <button
-      className={`${styles.button} ${
-        isListening && !isPaused ? styles.listening : ""
-      }`}
+      className={`${
+        isListening && !isPaused
+          ? "bg-[#ffe4e4] text-[#ff4444]"
+          : "bg-gray-800 text-white dark:bg-[#574964]"
+      } flex justify-center items-center gap-3 px-5 py-3 rounded-4xl w-60 cursor-pointer`}
       onClick={onClick}
     >
       {getButtonIcon()}
