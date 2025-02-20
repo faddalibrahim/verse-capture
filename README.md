@@ -1,6 +1,8 @@
-# VerseCapture
+# VerseCatch
 
-real-time sermon companion that listens to live sermons, transcribes speech, detects Bible references, and instantly displays the corresponding scripture
+![Banner](vc-banner.jpg)
+
+real-time sermon companion that listens to live sermons, transcribes speech, detects Bible & Quran references, and instantly displays the corresponding scripture
 
 ## Tools & Technologies
 
@@ -9,6 +11,7 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
 - [x] Open AI's Whisper Model (for transcription)
 - [x] Google Gemini API (for verse recognition)
 - [x] WebSockets for real-time communication
+- [x] Tailwind CSS
 
 ## Setup Locally
 
