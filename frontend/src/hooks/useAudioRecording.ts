@@ -115,7 +115,6 @@ export const useAudioRecording = ({
 
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          // Send audio chunk to server
           if (socket.readyState === WebSocket.OPEN) {
             socket.send(event.data);
           } else {
