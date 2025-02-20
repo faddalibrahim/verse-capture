@@ -56,4 +56,4 @@ real-time sermon companion that listens to live sermons, transcribes speech, det
 
 ## Sneak Peek
 
-![Demo](demoo.gif)
+![Demo](demo.gif)
